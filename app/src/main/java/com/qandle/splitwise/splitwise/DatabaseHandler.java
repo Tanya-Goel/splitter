@@ -104,7 +104,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public static long autoAddContact(SQLiteDatabase db, People contact) {
-        ContentValues values = new ContentValues();
+        ContentValues values = new  ContentValues();
         values.put(KEY_NAME, contact.getName()); // People Name
 //        values.put(KEY_PH_NO, contact.getAmount()); // People Phone
 

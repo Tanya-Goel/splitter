@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.qandle.splitwise.splitwise.Distribute.minCashFlow;
+
 public class AllNames extends AppCompatActivity {
     DatabaseHandler db;
     ListView lv;
@@ -41,6 +43,7 @@ public class AllNames extends AppCompatActivity {
     Button b1,b2;
     private AlertDialog alertDialog;
     People paidBy;
+    HashMap<Integer,String> contacts_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,7 @@ public class AllNames extends AppCompatActivity {
         b2=findViewById(R.id.split);
         lv = new ListView(this);
         contacts = db.getAllContacts();
+        initialiseHashMap();
         listAdapter = new ArrayAdapter<People>(this, R.layout.names_row, contacts);
         lv.setAdapter(listAdapter);
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -98,23 +102,10 @@ public class AllNames extends AppCompatActivity {
 
     }
 
-    private void showData() {
-        HashMap<String,AmountTransaction> data = db.query();
-
-        Iterator it = data.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-//            System.out.println(pair.getKey() + " = " + pair.getValue());
-            AmountTransaction transaction = (AmountTransaction) pair.getValue();
-            Log.i("Myapp","value "+transaction.amount);
-            it.remove(); // avoids a ConcurrentModificationException
-        }
-
-    }
-
     private void updateAll()
     {
         contacts = db.getAllContacts();
+        initialiseHashMap();
         listAdapter = new ArrayAdapter<People>(this, R.layout.names_row, contacts);
         lv.setAdapter(listAdapter);
 //        List<People> contacts = db.getAllContacts();
@@ -216,4 +207,60 @@ public class AllNames extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
+    private void showData() {
+        HashMap<String,AmountTransaction> data = db.query();
+
+//        Iterator it = data.entrySet().iterator();
+//        while (it.hasNext()) {
+//            Map.Entry pair = (Map.Entry)it.next();
+////            System.out.println(pair.getKey() + " = " + pair.getValue());
+//            AmountTransaction transaction = (AmountTransaction) pair.getValue();
+//            Log.i("Myapp","value "+transaction.amount);
+//            it.remove(); // avoids a ConcurrentModificationException
+//        }
+
+
+        List<AmountTransaction> values = new ArrayList<AmountTransaction>(data.values());
+
+        int n = contacts.size();
+        double amount[][] = new double[n][n];
+
+        for (AmountTransaction t : values)
+        {
+            amount[t.payee-1][t.receiver-1] = t.getAmount();
+        }
+        ArrayList<AmountTransaction> finalList = new ArrayList<>();
+        minCashFlow(amount,n,finalList);
+
+        for (AmountTransaction t : finalList)
+        {
+
+            Log.i("Myapp",""+contacts_name.get(t.payee) + " has to give Rs "+t.amount+"/- to "+contacts_name.get(t.receiver));
+        }
+
+
+
+//        for (int i=0;i<n;i++)
+//        {
+//            for(int j=0;j<n;j++)
+//            {
+//                Log.i("MyApp","i->"+i+",j->"+j+"[i][j]->"+amount[i][j]);
+//            }
+//        }
+
+
+    }
+
+    public void initialiseHashMap()
+    {
+        contacts_name = new HashMap<>();
+        for (People p : contacts)
+        {
+            contacts_name.put(p._id,p._name);
+        }
+    }
+
 }

@@ -1,14 +1,16 @@
 package com.qandle.splitwise.splitwise;
 
+import java.util.ArrayList;
+
 public class Distribute
 
 {
     // Number of persons (or vertices in the graph)
-    static final int N = 4;
+//    static final int N = 4;
 
     // A utility function that returns
     // index of minimum value in arr[]
-    static int getMin(int arr[])
+    static int getMin(double arr[],int N)
     {
         int minInd = 0;
         for (int i = 1; i < N; i++)
@@ -19,7 +21,7 @@ public class Distribute
 
     // A utility function that returns
     // index of maximum value in arr[]
-    static int getMax(int arr[])
+    static int getMax(double arr[],int N)
     {
         int maxInd = 0;
         for (int i = 1; i < N; i++)
@@ -29,7 +31,7 @@ public class Distribute
     }
 
     // A utility function to return minimum of 2 values
-    static int minOf2(int x, int y)
+    static double minOf2(double x, double y)
     {
         return (x < y) ? x: y;
     }
@@ -40,7 +42,7 @@ public class Distribute
     // i'th person will amount[i]
     // If amount[p] is negative, then
     // i'th person will give -amount[i]
-    static void minCashFlowRec(int amount[])
+    static void minCashFlowRec(double amount[],int N, ArrayList<AmountTransaction> finalList)
     {
         // Find the indexes of minimum and
         // maximum values in amount[]
@@ -50,7 +52,7 @@ public class Distribute
         // to be taken(or debited) from any person.
         // So if there is a positive value in amount[],
         // then there must be a negative value
-        int mxCredit = getMax(amount), mxDebit = getMin(amount);
+        int mxCredit = getMax(amount,N), mxDebit = getMin(amount,N);
 
         // If both amounts are 0, then
         // all amounts are settled
@@ -58,20 +60,21 @@ public class Distribute
             return;
 
         // Find the minimum of two amounts
-        int min = minOf2(-amount[mxDebit], amount[mxCredit]);
+        double min = minOf2(-amount[mxDebit], amount[mxCredit]);
         amount[mxCredit] -= min;
         amount[mxDebit] += min;
 
+        finalList.add(new AmountTransaction(mxDebit+1,mxCredit+1,min));
+
         // If minimum is the maximum amount to be
-        System.out.println("Person " + mxDebit + " pays " + min
-                + " to " + "Person " + mxCredit);
+//        System.out.println("Person " + mxDebit + " pays " + min + " to " + "Person " + mxCredit);
 
         // Recur for the amount array.
         // Note that it is guaranteed that
         // the recursion would terminate
         // as either amount[mxCredit]  or
         // amount[mxDebit] becomes 0
-        minCashFlowRec(amount);
+        minCashFlowRec(amount,N,finalList);
     }
 
     // Given a set of persons as graph[]
@@ -80,11 +83,11 @@ public class Distribute
     // pay person j, this function
     // finds and prints the minimum
     // cash flow to settle all debts.
-    static void minCashFlow(int graph[][])
+    static void minCashFlow(double graph[][], int N, ArrayList<AmountTransaction> finalList)
     {
         // Create an array amount[],
         // initialize all value in it as 0.
-        int amount[]=new int[N];
+        double amount[]=new double[N];
 
         // Calculate the net amount to
         // be paid to person 'p', and
@@ -96,7 +99,7 @@ public class Distribute
             for (int i = 0; i < N; i++)
                 amount[p] += (graph[i][p] - graph[p][i]);
 
-        minCashFlowRec(amount);
+        minCashFlowRec(amount,N,finalList);
     }
 
 

@@ -34,6 +34,7 @@ public class TravelExpense extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                startActivity( new Intent (TravelExpense.this,FinalTransaction.class));
 //                startActivityForResult(new Intent(TravelExpense.this,AddTravel.class),101);
             }
         });

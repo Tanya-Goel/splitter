@@ -20,6 +20,6 @@ public class MainActivity extends AppCompatActivity {
                 {0,0,500,0}};
 
         // Print the solution
-        minCashFlow(graph);
+//        minCashFlow(graph,4);
     }
 }
