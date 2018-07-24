@@ -7,9 +7,6 @@
     tools:context=".FinalTransaction"
     android:orientation="vertical">
     <TextView
-        android:layout_width=""
-        android:layout_height="" />
-    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/tv1"/>
